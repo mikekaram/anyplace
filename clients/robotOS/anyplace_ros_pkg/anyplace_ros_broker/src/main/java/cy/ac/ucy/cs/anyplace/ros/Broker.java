@@ -41,7 +41,7 @@ import anyplace_ros_custom_msgs.*;
  * by: @author damonkohler@google.com (Damon Kohler) The custom implementation
  * is created by: mickaram@hotmail.com (Mike Karamousadakis)
  */
-public class Client extends AbstractNodeMain {
+public class Broker extends AbstractNodeMain {
 
 	private String root_namespace = "/anyplace_ros/";
 
@@ -59,7 +59,7 @@ public class Client extends AbstractNodeMain {
 
 	@Override
 	public GraphName getDefaultNodeName() {
-		return GraphName.of("anyplace_ros_client/server");
+		return GraphName.of("anyplace_ros_broker/server");
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class Client extends AbstractNodeMain {
 
 		if (access_token.isEmpty() || access_token == null) {
 			connectedNode.getLog().error(
-					"Access token is empty. Could not initialize correctly the anyplace-ros client. Check that the file params.yaml can be accessed.\n");
+					"Access token is empty. Could not initialize correctly the anyplace-ros broker. Check that the file params.yaml can be accessed.\n");
 			System.exit(-1);
 		}
 		client = new Anyplace(host, port, cache);

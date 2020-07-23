@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+
+import sys
+import rospy
+from anyplace_ros_custom_msgs.srv import *
+from anyplace_ros_custom_msgs.msg import *
+from sensor_msgs.msg import NavSatFix, NavSatStatus
+from rospy_message_converter import json_message_converter, message_converter
+from std_msgs.msg import Header
+
+anyplace_ros_namespace = "/anyplace_ros/"
+anyplace_ros_client_namespace = "/anyplace_ros_client/"
+topic_name = "sensor_data"
+
+
+def estimate_position_client(operating_system, buid, floor, algorithm, debug):
+    rospy.wait_for_service(anyplace_ros_namespace + "estimate_position")
+    try:
+
+        estimate_position = rospy.ServiceProxy(
+            anyplace_ros_namespace + "estimate_position", EstimatePosition)
+        response = estimate_position(
+            operating_system=operating_system, buid=buid, floor=floor, algorithm=algorithm)
+        if ("Error" in response.response):
+            raise ValueError("Anyplace Server responded with error code\n")
+        if(debug):
+            rospy.loginfo("Success: {} and response: {}\n".format(
+                response.success, response.response))
+        resp_ros_msg = json_message_converter.convert_json_to_ros_message(
+            'anyplace_ros_custom_msgs/AnyplaceResponse', response.response)
+        resp = message_converter.convert_ros_message_to_dictionary(
+            resp_ros_msg)
+        if(debug):
+            rospy.loginfo(
+                f'{resp["message"]}, lat:{resp["lat"]}, long: {resp["long"]}\n')
+        return resp
+    except rospy.ServiceException as e:
+        rospy.logerr(f"Service call failed: {e}")
+        return None
+    except ValueError as e:
+        rospy.logerr(f"Value error: {e}")
+        return None
+
+
+if __name__ == "__main__":
+
+    rospy.init_node('anyplace_ros_client')
+    rate = rospy.Rate(0.1)  # 10 Hz
+    global data_publisher
+    data_publisher = rospy.Publisher(anyplace_ros_client_namespace +
+                                     topic_name, NavSatFix, queue_size=10)
+    while not rospy.is_shutdown():
+        try:
+            if(debug):
+                rospy.loginfo("Creating request for estimate_position\n")
+
+            operating_system = rospy.get_param(
+                anyplace_ros_client_namespace + 'operating_system', 'linux')
+            buid = rospy.get_param(
+                anyplace_ros_client_namespace + 'buid', 'user')
+            floor = rospy.get_param(
+                anyplace_ros_client_namespace + 'floor', '1')
+            algorithm = rospy.get_param(
+                anyplace_ros_client_namespace + 'algorithm', '1')
+            debug = rospy.get_param(
+                anyplace_ros_client_namespace + 'tester_debug', False)
+
+            if(debug):
+                rospy.loginfo("Data to be sent:\n os: {},\n buid: {},\n floor: {},\n algorithm: {}\n".format(
+                    operating_system, buid, floor, algorithm))
+            response = estimate_position_client(
+                operating_system, buid, floor, algorithm, debug)
+            if(response is not None):
+                # status = STATUS_FIX, service = SERVICE_GPS
+                new_status = NavSatStatus(status=0, service=1)
+                new_msg = NavSatFix()
+                header = Header()
+                header.stamp = rospy.Time.now()
+                new_msg.header = header
+                new_msg.status = new_status
+                new_msg.position_covariance = 9 * [float(inf)]
+                new_msg.latitude = response["lat"]
+                new_msg.longitude = response["long"]
+                # FIX ME! Maybe we could add altitude calculation in next iteration?
+                new_msg.altitude = 0
+                # position_covariance_type = COVARIANCE_TYPE_UNKNOWN
+                new_msg.position_covariance_type = 3
+                data_publisher.publish(new_msg)
+        except rospy.ROSInterruptException:
+            rospy.logerr("program interrupted before completion")
+            exit(1)
+        rate.sleep()

@@ -1,0 +1,5 @@
+<launch>
+<rosparam ns="anyplace_ros" file="$(find anyplace_ros_pkg)/anyplace_ros_broker/params/params.yaml" command="load"/>
+<node pkg="anyplace_ros_pkg" type="anyplace_ros_broker" name="anyplace_ros_broker" args="cy.ac.ucy.cs.anyplace.ros.Broker" output="screen">
+ </node>
+</launch>

@@ -1,0 +1,5 @@
+<launch>
+<rosparam ns="anyplace_ros_client" file="$(find anyplace_ros_client)/params/params.yaml" command="load"/>
+<node pkg="anyplace_ros_client" type="anyplace_ros_client" name="tester" output="screen">
+ </node>
+</launch>
