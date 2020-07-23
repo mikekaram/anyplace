@@ -72,11 +72,11 @@ if __name__ == "__main__":
                 operating_system, buid, floor, algorithm, debug)
             if(response is not None):
                 # status = STATUS_FIX, service = SERVICE_GPS
-                new_status = NavSatStatus(status=0, service=1)
                 new_msg = NavSatFix()
                 header = Header()
                 header.stamp = rospy.Time.now()
                 new_msg.header = header
+                new_status = NavSatStatus(status=0, service=1)
                 new_msg.status = new_status
                 new_msg.position_covariance = 9 * [float(inf)]
                 new_msg.latitude = response["lat"]

@@ -8,6 +8,7 @@ set(PACKAGE_DEPENDENCIES
   message_generation
   message_runtime
   std_msgs
+  sensor_msgs
   rospy_message_converter
   anyplace_ros_custom_msgs
 )

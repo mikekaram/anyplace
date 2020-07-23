@@ -57,6 +57,7 @@
   <exec_depend>anyplace_ros_custom_msgs</exec_depend>
   <exec_depend>rospy_message_converter</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <depend>sensor_msgs</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
