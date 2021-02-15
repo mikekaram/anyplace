@@ -45,6 +45,8 @@ public class Broker extends AbstractNodeMain {
 
 	private String root_namespace = "/anyplace_ros/";
 
+	private String wireless_interface;
+
 	private String host;
 
 	private String port;
@@ -69,6 +71,7 @@ public class Broker extends AbstractNodeMain {
 
 		host = parameterTree.getString(root_namespace + "host", "ap-dev.cs.ucy.ac.cy");
 		port = parameterTree.getString(root_namespace + "port", "443");
+		wireless_interface = parameterTree.getString(root_namespace + "wireless_interface", "wlo1");
 		cache = parameterTree.getString(root_namespace + "cache", "/res");
 		access_token = parameterTree.getString(root_namespace + "access_token");
 		debug = parameterTree.getBoolean(root_namespace + "anyplace_ros_debug", false);
@@ -479,7 +482,7 @@ public class Broker extends AbstractNodeMain {
 				if (operating_system.equals("linux")) {
 					cmd[0] = "/bin/bash";
 					cmd[1] = "-c";
-					cmd[2] = "iwlist wlo1 scan | awk  '/Address/ {print $5}; /level/ {print $3}' |  cut -d\"=\" -f2 ";
+					cmd[2] = "iwlist " + wireless_interface + " scan | awk  '/Address/ {print $5}; /level/ {print $3}' |  cut -d\"=\" -f2 ";
 					connectedNode.getLog().info("Cmd on Linux is: " + cmd[0] +" "+ cmd[1] +" "+ cmd[2] + "\n");
 				} else if (operating_system.equals("mac")) {
 					cmd[0] = "/bin/sh";
@@ -555,7 +558,7 @@ public class Broker extends AbstractNodeMain {
 				if (operating_system.equals("linux")) {
 					cmd[0] = "/bin/sh";
 					cmd[1] = "-c";
-					cmd[2] = "sudo iwlist wlo1 scan | awk  '/Address/ {print $5}; /level/ {print $3}' |  cut -d\"=\" -f2 ";
+					cmd[2] = "sudo iwlist " + wireless_interface + " scan | awk  '/Address/ {print $5}; /level/ {print $3}' |  cut -d\"=\" -f2 ";
 
 				} else if (operating_system.equals("mac")) {
 					cmd[0] = "/bin/sh";

@@ -6,12 +6,13 @@
 docker run --rm -it \
     --net host \
     --cap-add=NET_ADMIN \
+    --name client \
     --volume="$(dirname `pwd`)":/root/rosjava/src/anyplace-ros \
     ros-kinetic-rosjava \
     bash
 
 # docker network rm ros
 # --net ros \
-# --name tester_1 \
-# --env ROS_HOSTNAME=tester_1 \
+# --name client \
+# --env ROS_HOSTNAME=client \
 # --env ROS_MASTER_URI=http://master:11311 \

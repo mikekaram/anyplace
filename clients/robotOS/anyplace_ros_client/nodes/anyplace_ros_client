@@ -31,14 +31,13 @@ def estimate_position_client(operating_system, buid, floor, algorithm, debug):
         resp = message_converter.convert_ros_message_to_dictionary(
             resp_ros_msg)
         if(debug):
-            rospy.loginfo(
-                f'{resp["message"]}, lat:{resp["lat"]}, long: {resp["long"]}\n')
+            rospy.loginfo('{}, lat:{}, long: {}\n'.format(resp["message"], resp["lat"], resp["long"]))
         return resp
     except rospy.ServiceException as e:
-        rospy.logerr(f"Service call failed: {e}")
+        rospy.logerr("Service call failed: {}".format(e))
         return None
     except ValueError as e:
-        rospy.logerr(f"Value error: {e}")
+        rospy.logerr("Value error: {}".format(e))
         return None
 
 
@@ -51,8 +50,6 @@ if __name__ == "__main__":
                                      topic_name, NavSatFix, queue_size=10)
     while not rospy.is_shutdown():
         try:
-            if(debug):
-                rospy.loginfo("Creating request for estimate_position\n")
 
             operating_system = rospy.get_param(
                 anyplace_ros_client_namespace + 'operating_system', 'linux')
@@ -64,6 +61,8 @@ if __name__ == "__main__":
                 anyplace_ros_client_namespace + 'algorithm', '1')
             debug = rospy.get_param(
                 anyplace_ros_client_namespace + 'tester_debug', False)
+            if(debug):
+                rospy.loginfo("Creating request for estimate_position\n")
 
             if(debug):
                 rospy.loginfo("Data to be sent:\n os: {},\n buid: {},\n floor: {},\n algorithm: {}\n".format(
