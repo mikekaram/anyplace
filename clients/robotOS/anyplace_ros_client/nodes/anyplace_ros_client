@@ -77,7 +77,7 @@ if __name__ == "__main__":
                 new_msg.header = header
                 new_status = NavSatStatus(status=0, service=1)
                 new_msg.status = new_status
-                new_msg.position_covariance = 9 * [float(inf)]
+                new_msg.position_covariance = 9 * [float('inf')]
                 new_msg.latitude = response["lat"]
                 new_msg.longitude = response["long"]
                 # FIX ME! Maybe we could add altitude calculation in next iteration?
